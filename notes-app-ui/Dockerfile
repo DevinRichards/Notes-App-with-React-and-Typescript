@@ -7,14 +7,17 @@ WORKDIR /app
 # Copy package.json and package-lock.json (or yarn.lock) into the container
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install compatible versions of typescript and react-scripts
+RUN npm install typescript@4.9.5 react-scripts@5.0.1 --legacy-peer-deps
+
+# Install all other dependencies
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code into the container
 COPY . .
 
 # Build the application
-RUN npm run build --force
+RUN npm run build
 
 # Use a minimal web server to serve the build output
 FROM nginx:alpine
