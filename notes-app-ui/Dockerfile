@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build --legacy-peer-deps
+RUN npm run build --force
 
 # Use a minimal web server to serve the build output
 FROM nginx:alpine
