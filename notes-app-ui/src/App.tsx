@@ -32,31 +32,44 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const [selectedNote, setSelectedNote] =
-    useState<Note | null>(null);
-
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
     setTitle(note.title);
-    setContent(note.content)
-  }
-  const handleAddNote = (
-    event: React.FormEvent
-  ) => {
-    event.preventDefault();
-    try{
-      const response = await fetch(
-        "http://localhost:5000/api/notes",
-        {
-          
-        }
-      )
-    }
+    setContent(note.content);
+  };
 
-    setNotes([newNote, ...notes]);
-    setTitle("");
-    setContent("");
-  }
+  const [selectedNote, setSelectedNote] =
+    useState<Note | null>(null);
+
+    const handleAddNote = async (
+      event: React.FormEvent
+    ) => {
+      event.preventDefault();
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/notes",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title,
+              content,
+            }),
+          }
+        );
+  
+        const newNote = await response.json();
+  
+        setNotes([newNote, ...notes]);
+        setTitle("");
+        setContent("");
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  
 
   const handleUpdateNote = (
     event: React.FormEvent
@@ -91,12 +104,27 @@ const App = () => {
     setSelectedNote(null);
   }
 
-  const deleteNote = (event: React.MouseEvent, noteId: number) => {
+  const deleteNote = async (
+    event: React.MouseEvent,
+    noteId: number
+  ) => {
     event.stopPropagation();
 
-    const updatedNotes = notes.filter((note) => note.id !== noteId);
+    try {
+      await fetch(
+        `http://localhost:5000/api/notes/${noteId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const updatedNotes = notes.filter(
+        (note) => note.id !== noteId
+      );
 
-    setNotes(updatedNotes);
+      setNotes(updatedNotes);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -133,14 +161,13 @@ const App = () => {
       </form>
       <div className="notes-grid">
         {notes.map((note) => (
-          <div className="note-item"
-            onClick={() => handleNoteClick(note)}>
-            <div className="notes-header">
-              <button onClick={(event) => deleteNote(event, note.id)}>x</button>
-            </div>
-            <h2>{note.title}</h2>
-            <p>{note.content}</p>
+          <div key={note.id} className="note-item" onClick={() => handleNoteClick(note)}>
+          <div className="notes-header">
+          <button onClick={(event) => deleteNote(event, note.id)}>x</button>
           </div>
+          <h2>{note.title}</h2>
+          <p>{note.content}</p>
+        </div>
         ))}
       </div>
     </div>
