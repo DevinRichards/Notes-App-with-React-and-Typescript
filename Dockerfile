@@ -9,7 +9,7 @@ WORKDIR /app
 COPY notes-app-ui/package*.json ./notes-app-ui/
 
 # Install frontend dependencies
-RUN cd notes-app-ui && npm install
+RUN cd notes-app-ui && npm install --legacy-peer-deps
 
 # Copy the rest of the frontend application code into the container
 COPY notes-app-ui ./notes-app-ui
