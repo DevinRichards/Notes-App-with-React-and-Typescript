@@ -14,11 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
+// Serve the frontend
+app.use(express_1.default.static(path_1.default.join(__dirname, "../../notes-app-ui/build")));
+app.get("/", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "../../notes-app-ui/build", "index.html"));
+});
 app.get("/api/notes", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json({ message: "success!" });
 }));
