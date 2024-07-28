@@ -1,13 +1,21 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// Serve the frontend
+app.use(express.static(path.join(__dirname, "../../notes-app-ui/build")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../notes-app-ui/build", "index.html"));
+});
 
 app.get("/api/notes", async (req, res) => {
   res.json({ message: "success!" });
@@ -19,21 +27,21 @@ app.get("/notes", async (req, res) => {
 });
 
 app.post("/notes", async (req, res) => {
-  const {title, content} = req.body;
+  const { title, content } = req.body;
 
-  if (!title || !content){
-    return res.status(400).send("title and content fields required")
+  if (!title || !content) {
+    return res.status(400).send("title and content fields required");
   }
 
   try {
     const note = await prisma.note.create({
-      data: {title, content},
+      data: { title, content },
     });
     res.json(note);
-  } catch (error){
+  } catch (error) {
     res.status(500).send("Oops! Something went Wrong");
   }
-})
+});
 
 app.put("/notes/:id", async (req, res) => {
   const { title, content } = req.body;
