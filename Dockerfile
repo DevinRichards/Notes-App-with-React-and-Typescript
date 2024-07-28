@@ -33,6 +33,9 @@ RUN cd notes-app-server && npm install --legacy-peer-deps
 # Copy the rest of the backend application code into the container
 COPY notes-app-server ./notes-app-server
 
+# Compile TypeScript to JavaScript
+RUN cd notes-app-server && npm run build
+
 # ---- Create the final image ----
 FROM node:18-alpine
 
@@ -42,8 +45,8 @@ WORKDIR /app
 # Copy the built frontend files to the final image
 COPY --from=build-frontend /app/notes-app-ui/build ./notes-app-ui/build
 
-# Copy the backend files to the final image
-COPY --from=build-backend /app/notes-app-server ./notes-app-server
+# Copy the compiled backend files to the final image
+COPY --from=build-backend /app/notes-app-server/dist ./notes-app-server/dist
 
 # Set environment variables if needed
 ENV NODE_ENV=production
@@ -52,4 +55,4 @@ ENV NODE_ENV=production
 EXPOSE 3000 5000
 
 # Start the backend server
-CMD ["node", "notes-app-server/src/index.js"]
+CMD ["node", "notes-app-server/dist/index.js"]
