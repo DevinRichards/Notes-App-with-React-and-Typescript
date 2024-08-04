@@ -16,6 +16,14 @@ const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
+
+    console.log("API URL:", apiUrl); // Add this line to log the API URL
+    if (!apiUrl) {
+      console.error("API URL is not set. Please check your environment variables.");
+      return;
+    }
+
+    
     const fetchNotes = async () => {
       try {
         const response = await fetch(`${apiUrl}/notes`);
