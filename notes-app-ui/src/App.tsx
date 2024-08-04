@@ -13,7 +13,7 @@ const App = () => {
   const [content, setContent] = useState("");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
-  const apiUrl = process.env.DATABASE_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchNotes = async () => {
