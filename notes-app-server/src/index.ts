@@ -2,13 +2,23 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import dotenv from 'dotenv';
 
-const prisma = new PrismaClient();
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+});
 
 // Serve the frontend
 app.use(express.static(path.join(__dirname, "../../notes-app-ui/build")));
@@ -83,6 +93,7 @@ app.delete("/notes/:id", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("server running on localhost:5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
